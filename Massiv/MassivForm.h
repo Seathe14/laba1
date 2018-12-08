@@ -23,7 +23,6 @@ namespace Massiv {
 	vector <int> Array;
 	int rb;
 
-
 	public ref class MassivForm : public System::Windows::Forms::Form
 	{
 	public:
@@ -171,7 +170,7 @@ namespace Massiv {
 			this->tbNum->Name = L"tbNum";
 			this->tbNum->Size = System::Drawing::Size(100, 20);
 			this->tbNum->TabIndex = 3;
-			this->tbNum->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &MassivForm::BlockLetters);
+			this->tbNum->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &MassivForm::numElm);
 			// 
 			// label3
 			// 
@@ -551,7 +550,7 @@ private: System::Void Complete_Click(System::Object^  sender, System::EventArgs^
 		{
 		oper += Array.at(i);
 		}
-		tbResult->Text = "Среднее значение: " + (oper/Array.size()).ToString("F3");
+		tbResult->Text = "Среднее значение: " + (oper/Array.size()).ToString();
 		break;
 	case 3:
 		for (int i = 0; i < Array.size(); i++)
@@ -665,7 +664,12 @@ private: System::Void radioButton5_CheckedChanged(System::Object^  sender, Syste
 					e->Handled = true;          // Запрет ввода
 		}
 	}
+
+
+
 private: System::Void tbArr_KeyPress(System::Object^  sender, System::Windows::Forms::KeyPressEventArgs^  e) {
+
+
 	if (!Char::IsDigit(e->KeyChar))
 	{
 		// Запрет на ввод более одного знака минуса.
@@ -675,31 +679,49 @@ private: System::Void tbArr_KeyPress(System::Object^  sender, System::Windows::F
 				if(e->KeyChar != (char)Keys::Space)
 				e->Handled = true;          // Запрет ввода
 	}
-	if (tbArr->Text->EndsWith("-") && e->KeyChar == '-')
-		e->Handled = true;
-	/*if (!(tbArr->Text->EndsWith(" ")) && e->KeyChar == '-' && tbArr->Text->Length > 0)
-		e->Handled = true;*/
-	if (tbArr->Text->EndsWith("-") && e->KeyChar == ' ')
-		e->Handled = true;
-	/*if (tbArr->Text->EndsWith(" ") && e->KeyChar == ' ')
-		e->Handled = true;*/
-	if (tbArr->Text == "" && e->KeyChar == ' ')
-		e->Handled = true;
-	if (tbArr->SelectionStart < tbArr->Text->Length && tbArr->SelectionStart>0)
+	//--------------------------------------Минусы---------------------------------------------
+	if (tbArr->SelectionStart > 0 && tbArr->Text->Length > 0 && e->KeyChar != (char)Keys::Back)
 	{
-		if (e->KeyChar == ' ' && (tbArr->Text[tbArr->SelectionStart-1] == ' ' || tbArr->Text[tbArr->SelectionStart] == ' '))
+		if (tbArr->Text[tbArr->SelectionStart - 1] == '-' && (e->KeyChar == '-' || e->KeyChar == ' '))
 			e->Handled = true;
-		if (e->KeyChar == '-' && tbArr->Text[tbArr->SelectionStart - 1] == '-' || tbArr->Text[tbArr->SelectionStart] == '-')
+		if (tbArr->Text[tbArr->SelectionStart - 1] == '-' && e->KeyChar == (char)Keys::D0)
+			e->Handled = true;
+		if (tbArr->SelectionStart < tbArr->Text->Length)
+			if (tbArr->Text[tbArr->SelectionStart] == '-' && e->KeyChar == '-')
+				e->Handled = true;
+		if (tbArr->Text[tbArr->SelectionStart - 1] != ' ' && e->KeyChar == '-')
+			e->Handled = true;
+	}
+	else if (tbArr->SelectionStart == 0 && tbArr->Text->StartsWith("-") && e->KeyChar == '-')
+		e->Handled = true;
+	//----------------------------------------------------------------------------------------
+
+	if (tbArr->SelectionStart > 0 && tbArr->Text->Length > 0 && e->KeyChar != (char)Keys::Back)
+	{
+		if (tbArr->Text[tbArr->SelectionStart - 1] == ' ' && e->KeyChar == ' ')
 		{
 			e->Handled = true;
 		}
-		if (tbArr->Text[tbArr->SelectionStart-1] != ' ')
-			e->Handled = true;
-		}
-	if (tbArr->Text->EndsWith(" ") && e->KeyChar == ' ')
+		if (tbArr->SelectionStart < tbArr->Text->Length)
+			if (tbArr->Text[tbArr->SelectionStart] == ' ' && e->KeyChar == ' ')
+				{
+					e->Handled = true;
+				}
+	}
+	if (tbArr->SelectionStart == 0 && e->KeyChar == ' ')
 		e->Handled = true;
-	tbMinDiap->Text = Convert::ToString(tbArr->SelectionStart);
-	tbMaxDiap->Text = Convert::ToString(tbArr->Text->Length);
+
+
+
+}
+private: System::Void numElm(System::Object^  sender, System::Windows::Forms::KeyPressEventArgs^  e) {
+	if (!Char::IsDigit(e->KeyChar))
+	{
+		if(e->KeyChar != (char)Keys::Back)
+			e->Handled = true;
+	}
+	if (tbNum->SelectionStart == 0 && e->KeyChar == (char)Keys::D0)
+		e->Handled = true;
 }
 };
 }
