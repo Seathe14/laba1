@@ -514,8 +514,7 @@ private: System::Void Complete_Click(System::Object^  sender, System::EventArgs^
 	double oper = 0;
 	int min, max;
 	int buf,k =0;
-	int push;
-	String^ buffer = tbArr->Text;
+	int push;	
 	string b = msclr::interop::marshal_as< std::string >(tbArr->Text);
 	istringstream iss(b);
 	while (iss >> push)
@@ -707,11 +706,21 @@ private: System::Void tbArr_KeyPress(System::Object^  sender, System::Windows::F
 				{
 					e->Handled = true;
 				}
+		
 	}
 	if (tbArr->SelectionStart == 0 && e->KeyChar == ' ')
 		e->Handled = true;
 
-
+	
+	if (tbArr->SelectionStart > 1 && tbArr->Text->Length>2)
+	{
+		if (tbArr->Text[tbArr->SelectionStart - 2] == ' ' && tbArr->Text[tbArr->SelectionStart - 1] == '0' && (e->KeyChar != ' ' && e->KeyChar != (char)Keys::Back))
+			e->Handled = true;
+	}
+	if (tbArr->SelectionStart == 1 && tbArr->Text[tbArr->SelectionStart-1] == '0' && (e->KeyChar != ' ' && e->KeyChar != (char)Keys::Back))
+	{
+		e->Handled = true;
+	}
 
 }
 private: System::Void numElm(System::Object^  sender, System::Windows::Forms::KeyPressEventArgs^  e) {
