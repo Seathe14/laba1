@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <algorithm>
 namespace Massiv {
 
 	using namespace System;
@@ -20,6 +21,9 @@ namespace Massiv {
 	/// </summary>
 
 	int maxDiap, minDiap, Num;
+
+
+
 	vector <int> Array;
 	int rb;
 
@@ -29,6 +33,7 @@ namespace Massiv {
 		MassivForm(void)
 		{
 			InitializeComponent();
+
 			//
 			//TODO: Add the constructor code here
 			//
@@ -485,9 +490,9 @@ private: System::Void GenerateArr_Click(System::Object^  sender, System::EventAr
 	{
 		Array.clear();
 		tbArr->Text = "";
-		Num = Convert::ToInt16(tbNum->Text);
-		minDiap = Convert::ToInt16(tbMinDiap->Text);
-		maxDiap = Convert::ToInt16(tbMaxDiap->Text);
+		Num = Convert::ToInt32(tbNum->Text);
+		minDiap = Convert::ToInt32(tbMinDiap->Text);
+		maxDiap = Convert::ToInt32(tbMaxDiap->Text);
 		srand(time(0));
 		if (maxDiap > minDiap)
 		{
@@ -505,128 +510,51 @@ private: System::Void GenerateArr_Click(System::Object^  sender, System::EventAr
 			MessageBox::Show("Максимальное значение должно быть больше минимального");
 		}
 	}
+	else MessageBox::Show("Заполните поля");
 }
 private: System::Void radioButton1_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
 	rb = 1;
 }
 private: System::Void Complete_Click(System::Object^  sender, System::EventArgs^  e) {
-	Array.clear();
-	double oper = 0;
-	int min, max;
-	int buf,k =0;
-	int push;	
-	string b = msclr::interop::marshal_as< std::string >(tbArr->Text);
-	istringstream iss(b);
-	while (iss >> push)
+	if (tbArr->Text != "")
 	{
-		if (k == 0)
+		Array.clear();
+		int push;
+		string b = msclr::interop::marshal_as< std::string >(tbArr->Text); // конвертация System string в std::string
+		istringstream iss(b); // считывание строки (каждого элемента)
+		while (iss >> push) // пока есть элемент
 		{
-			max = min = push;
+			Array.push_back(push); // добавляем в массив push
 		}
-		if (max < push)
+		switch (rb)
 		{
-			max = push;
+		case 1:
+			Sum(Array);
+			break;
+		case 2:
+			Avg(Array);
+			break;
+		case 3:
+			Min(Array);
+			break;
+		case 4:
+			Max(Array);
+			break;
+		case 5:
+			Even(Array);
+			break;
+		case 6:
+			Odd(Array);
+			break;
+		case 7:
+			Ascend(Array);
+			break;
+		case 8:
+			Descend(Array);
+			break;
 		}
-		if (min > push)
-		{
-			min = push;
-		}
-		Array.push_back(push);
-		k++;
 	}
-	switch (rb)
-	{
-	case 1:
-		oper = 0;
-		for (int i = 0; i < Array.size(); i++)
-		{
-			oper += Array.at(i);
-		}
-		tbResult->Text = "Сумма элементов: "+ oper.ToString();
-		break;
-	case 2:
-		for (int i = 0; i < Array.size(); i++)
-		{
-		oper += Array.at(i);
-		}
-		tbResult->Text = "Среднее значение: " + (oper/Array.size()).ToString();
-		break;
-	case 3:
-		for (int i = 0; i < Array.size(); i++)
-		{
-			if (min > Array[i])
-			{
-				min = Array[i];
-			}
-		}
-		tbResult->Text = "Минимальный элемент: " + min.ToString();
-		break;
-	case 4:
-		for (int i = 0; i < Array.size(); i++)
-		{
-			if (max < Array[i])
-			{
-				max = Array[i];
-			}
-		}
-		tbResult->Text = "Максимальный элемент: " + max.ToString();
-		break;
-	case 5:
-		tbResult->Text = "Чётные элементы: ";
-		for (int i = 0; i < Array.size(); i++)
-		{
-			if (Array[i] % 2 == 0)
-				tbResult->Text += Array[i] + " ";
-		}
-		break;
-	case 6:
-		tbResult->Text = "Нечётные элементы: ";
-		for (int i = 0; i < Array.size(); i++)
-		{
-			if (Array[i] % 2 != 0)
-				tbResult->Text += Array[i] + " ";
-		}
-		break;
-	case 7:
-		tbResult->Text = "Сортировка по возрастанию: ";
-		for (int i = 0; i < Array.size()-1; i++)
-		{
-			for (int j = i+1; j < Array.size(); j++)
-			{
-				if (Array[i] > Array[j])
-				{
-					buf = Array[j];
-					Array[j] = Array[i];
-					Array[i] = buf;
-				}
-			}
-		}
-		for (int i = 0; i < Array.size(); i++)
-		{
-			tbResult->Text += Convert::ToString(Array.at(i)) + " ";
-		}
-		break;
-	case 8:
-		tbResult->Text = "Сортировка по убыванию: ";
-		for (int i = 0; i < Array.size() - 1; i++)
-		{
-			for (int j = i + 1; j < Array.size(); j++)
-			{
-				if (Array[i] < Array[j])
-				{
-					buf = Array[i];
-					Array[i] = Array[j];
-					Array[j] = buf;
-				}
-			}
-		}
-		for (int i = 0; i < Array.size(); i++)
-		{
-			tbResult->Text += Convert::ToString(Array.at(i)) + " ";
-		}
-		break;
-
-	}
+	else MessageBox::Show("Введите массив");
 }
 private: System::Void Close_Click(System::Object^  sender, System::EventArgs^  e) {
 	this->Close();
@@ -732,5 +660,93 @@ private: System::Void numElm(System::Object^  sender, System::Windows::Forms::Ke
 	if (tbNum->SelectionStart == 0 && e->KeyChar == (char)Keys::D0)
 		e->Handled = true;
 }
+		 void Max(vector<int>Array)
+		 {
+			 int max = INT_MIN;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 if (max < Array[i])
+				 {
+					 max = Array[i];
+				 }
+			 }
+			 tbResult->Text = "Максимальный элемент: " + max.ToString();
+		 }
+		 void Sum(vector<int>Array)
+		 {
+			 int oper = 0;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 oper += Array[i];
+			 }
+			 tbResult->Text = "Сумма элементов: " + oper.ToString();
+		 }
+		 void Avg(vector<int>Array)
+		 {
+			 double oper = 0;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 oper += Array[i];
+			 }
+			 tbResult->Text = "Среднее значение: " + (oper / Array.size()).ToString();
+		 }
+		 void Min(vector<int>Array)
+		 {
+			 int min = INT_MAX;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 if (min > Array[i])
+				 {
+					 min = Array[i];
+				 }
+			 }
+			 tbResult->Text = "Минимальный элемент: " + min.ToString();
+		 }
+		 void Even(vector<int>Array)
+		 {
+			 tbResult->Text = "Чётные элементы: ";
+			 int count = 0;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 if (Array[i] % 2 == 0)
+				 {
+					 count++;
+					 tbResult->Text += Array[i] + " ";
+				 }
+			 }
+			 if (count == 0) tbResult->Text = "Чётных элементов нет";
+		 }
+		 void Odd(vector<int>Array)
+		 {
+			 tbResult->Text = "Нечётные элементы: ";
+			 int count = 0;
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 if (Array[i] % 2 != 0)
+				 {
+					 count++;
+					 tbResult->Text += Array[i] + " ";
+				 }
+			 }
+			 if (count == 0) tbResult->Text = "Нечётных элементов нет";
+		 }
+		 void Ascend(vector<int>Array)
+		 {
+			 tbResult->Text = "Сортировка по возрастанию: ";
+			 sort(Array.begin(), Array.end());
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 tbResult->Text += Convert::ToString(Array[i]) + " ";
+			 }
+		 }
+		 void Descend(vector<int>Array)
+		 {
+			 tbResult->Text = "Сортировка по убыванию: ";
+			 sort(Array.rbegin(), Array.rend());
+			 for (int i = 0; i < Array.size(); i++)
+			 {
+				 tbResult->Text += Convert::ToString(Array[i]) + " ";
+			 }
+		 }
 };
 }
